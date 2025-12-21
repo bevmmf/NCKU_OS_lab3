@@ -1,0 +1,24 @@
+# default: text files use LF in repo and in working tree
+* text=auto eol=lf
+
+# Makefile / shell scripts: force LF
+Makefile text eol=lf
+*.mk text eol=lf
+*.sh text eol=lf
+
+# C/C++ source: LF
+*.c text eol=lf
+*.h text eol=lf
+*.cpp text eol=lf
+*.hpp text eol=lf
+
+# txt: LF
+*.txt text eol=lf
+
+
+
+
+
+
+
+
