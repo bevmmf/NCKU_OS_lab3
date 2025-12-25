@@ -17,6 +17,7 @@ FILE *fptr3;
 int **x;
 int **y;
 
+static pthread_spinlock_t lock_spin;
 
 // Put file data intp x array
 void data_processing(void){
@@ -51,7 +52,9 @@ void *thread(void *arg){
             res = 0;
             for(int k=0; k<matrix_row_y; k++){
                 /*YOUR CODE HERE*/
-
+                pthread_spin_lock(&lock_spin);
+                res += x[i][k] * y[k][j];
+                pthread_spin_unlock(&lock_spin);
                 /****************/
             }
             fprintf(fptr3, "%d ", res);
@@ -78,8 +81,10 @@ int main(){
     data_processing();
     fprintf(fptr3, "%d %d\n", matrix_row_x, matrix_col_y);
 
+    pthread_spin_init(&lock_spin, PTHREAD_PROCESS_PRIVATE);
     pthread_create(&t1, NULL, thread, NULL);
     pthread_join(t1, NULL);
+    pthread_spin_destroy(&lock_spin);
 
 
     fclose(fptr1);
