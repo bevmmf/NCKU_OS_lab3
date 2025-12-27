@@ -72,14 +72,24 @@ void *thread1(void *arg){
 #endif
 
     /*YOUR CODE HERE*/
-    /* Hint: Write data into proc file.*/
+    int fd = open("/proc/Mythread_info", O_WRONLY);
+    if (fd < 0) {
+        perror("open /proc/Mythread_info");
+    } else {
+        if (write(fd, data, strlen(data)) < 0)
+            perror("write /proc/Mythread_info");
+        close(fd);
+    }
 
+    /* rewind before read in case FILE* EOF */
+    rewind(fptr4);
     /****************/ 
 
     char buffer[50]; 
     while (fgets(buffer, sizeof(buffer), fptr4) != NULL){
         printf("%s", buffer);
     }
+    return NULL;
 }
 
 
@@ -96,14 +106,24 @@ void *thread2(void *arg){
     }
     
     /*YOUR CODE HERE*/
-    /* Hint: Write data into proc file.*/
+    int fd = open("/proc/Mythread_info", O_WRONLY);
+    if (fd < 0) {
+        perror("open /proc/Mythread_info");
+    } else {
+        if (write(fd, data, strlen(data)) < 0)
+            perror("write /proc/Mythread_info");
+        close(fd);
+    }
 
+    /* rewind before read in case FILE* EOF */
+    rewind(fptr5);
     /****************/   
 
     char buffer[50]; 
     while (fgets(buffer, sizeof(buffer), fptr5) != NULL){
         printf("%s", buffer);
     } 
+    return NULL;
 }
 #endif
 
@@ -119,7 +139,7 @@ int main(){
     }
     z = malloc(sizeof(int*)*matrix_row_x);
     for(int i=0; i<matrix_row_x; i++){
-        z[i] = malloc(sizeof(int)*matrix_col_y);
+        z[i] = calloc(matrix_col_y,sizeof(int));
     }
     fptr1 = fopen("m1.txt", "r");
     fptr2 = fopen("m2.txt", "r");
@@ -136,7 +156,9 @@ int main(){
     pthread_create(&t2, NULL, thread2, NULL);
 #endif
     pthread_join(t1, NULL);
+#if (THREAD_NUMBER==2)
     pthread_join(t2, NULL);
+#endif
 
     for(int i=0; i<matrix_row_x; i++){
         for(int j=0; j<matrix_col_y; j++){
