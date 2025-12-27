@@ -17,7 +17,11 @@ void spin_lock() {
         "loop:\n\t"
         "mov $0, %%eax\n\t"
         /*YOUR CODE HERE*/
-
+		"xchg %%eax, %[lock]\n\t"   /* eax <- old lock, lock <- 0 */
+		"test %%eax, %%eax\n\t"     /* old==0 ? */
+		"jnz 1f\n\t"                /* old!=0 => acquired */
+		"or $-1, %%eax\n\t"         /* old==0 => set eax=-1, SF=1 so js will jump */
+		"1:\n\t"
         /****************/
         "js loop\n\t"
         :
@@ -30,7 +34,7 @@ void spin_unlock() {
     asm volatile(
         "mov $1, %%eax\n\t"
         /*YOUR CODE HERE*/
-
+        "xchg %%eax, %[lock]\n\t"   /* lock <- 1 */
         /****************/
         :
         : [lock] "m" (lock)
